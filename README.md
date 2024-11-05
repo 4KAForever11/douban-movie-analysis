@@ -7,6 +7,7 @@
 
 
 用*pyqt5*开发窗口
+我的笔记本的pyqt5程序路径C:\Users\12165\anaconda3\envs\douban-movie-analysis\Lib\site-packages\qt5_applications\Qt\bin\designer.exe
 
 
 
