@@ -1,10 +1,12 @@
 ### 项目简介
 
-项目全程使用python开发，相对来说比较粗制滥造了
+项目全程使用`python`环境，版本`python-3.9.20`，开发IDE工具`PyCharm`，版本`PyCharm Community Edition 2021.3.2`，程序相对来说比较粗制滥造了
 
-窗体使用pygame库开发
+窗体使用`pygame`库开发
 
 主要功能就是爬取豆瓣电影的指定详细页的评论，然后用爬到的评论使用训练好的情感分析模型进行输出分析正面评论和负面评论的数量
+
+目录：`D:\douban-movie-analysis\aistudio\checkpoint`里面是已经训练好了的一个情感分析模型
 
 `analyze_comments.py`是pygame窗口需要调用的模块：我把爬虫和调用本地情感分析模型的功能都集成进去了
 
@@ -13,6 +15,8 @@
 `spider.py`是原来用来测试的爬虫的代码
 
 因为没有弄好豆瓣的反爬，实质上现在`analyze_comments.py`的爬虫是不可用的状态，但原来的`spider.py`是可以使用的
+
+有能力的爬虫大佬可以帮我修改一下爬虫，各种反爬机制真的很难受😭
 
 <br>
 
@@ -30,24 +34,30 @@
 
 ### 安装部署
 
-**conda命令提示符**
+**1. 创建 Conda 虚拟环境**
 
-创建名为douban-movie-analysis的conda虚拟环境，指定python版本为3.9
+在 **conda命令提示符** 中创建名为 `douban-movie-analysis` 的 conda 虚拟环境，指定 Python 版本为 3.9：
 
 ```bash
 conda create -n douban-movie-analysis python=3.9
-
+```
 <br>
+2. 激活 Conda 虚拟环境
 
-**激活conda虚拟环境douban-movie-analysis**
 ```bash
 conda activate douban-movie-analysis
-
+```
 <br>
+3. 一键下载所需库,确保命令行在项目路径下，然后运行以下命令下载所需的库：
 
-**pip一键下载需要的库**
-确保命令行在项目路径下才能运行下面的命令
-```Python
+```bash
 pip install -r requirements.txt
+```
+<br>
+4. 下载完成后，运行`window.py`
 
+![pygame](tu/pygame.png)
 
+在输入框里面粘贴好豆瓣电影的某个电影的详细页url，比如：https://movie.douban.com/subject/1291544/
+
+最后点分析按钮运行程序，如果爬虫能正常爬取到数据，那么他就会继续运行，本地情感分析可能需要一点时间出结果，耐心等待下即可。
