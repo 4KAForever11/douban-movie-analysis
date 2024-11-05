@@ -12,7 +12,7 @@
 
 构想图
 
-![电影评论分析程序构想.drawio](C:\Users\12165\Desktop\电影评论分析程序构想.drawio.png)
+![电影评论分析程序构想](C:\Users\12165\Desktop\电影评论分析程序构想.png)
 
 
 
