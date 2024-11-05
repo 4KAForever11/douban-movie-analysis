@@ -34,6 +34,8 @@
 
 ### 安装部署
 
+在[发行版](https://github.com/4KAForever11/douban-movie-analysis/releases)下载源代码
+
 **1. 创建 Conda 虚拟环境**
 
 在 **conda命令提示符** 中创建名为 `douban-movie-analysis` 的 conda 虚拟环境，指定 Python 版本为 3.9：
