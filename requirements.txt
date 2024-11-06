@@ -1,0 +1,6 @@
+paddle
+paddlenlp
+pygame
+pyperclip
+emoji
+beautifulsoup4
