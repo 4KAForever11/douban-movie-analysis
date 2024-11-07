@@ -92,3 +92,36 @@ pip install -r requirements.txt
 **8. 调用情感分析模型进行分析**
 
 **9. 返回结果给pygame窗体并显示**
+
+### 更新日志
+
+**v0.1-douban-movie-analysis**
+
+`analyze_comments.py`
+
+1. 随机 User-Agent 轮换：新版代码定义了`USER_AGENTS`列表，并在每次请求时随机选择一个`User-Agent`，提升了反爬虫抵抗能力。beta版代码则使用了固定的`User-Agent`，更容易被网站识别为爬虫。
+
+2. 增加 Referer 头：新版代码在`fetch_comments_page`函数中添加了 `'Referer': 'https://movie.douban.com/'` 头信息，让请求更接近正常用户行为，有助于规避反爬虫机制。
+ 
+3. 页面抓取逻辑的封装：新版代码将页面获取逻辑封装为 `fetch_comments_page` 函数，简化了主函数`get_movie_comments`的结构，使代码更清晰、更易维护。
+
+4. 延时优化：新版代码在每页请求之间的延时范围设定为 5-20 秒，进一步避免频繁请求。旧版代码的延时范围相对较短（1-3 秒），可能增加被识别为爬虫的风险。
+
+5. URL 模板的直接构建：新版代码直接在`get_movie_comments`中生成分页 URL，不再像旧版那样先定义模板然后替换，使代码更简洁清晰。
+
+6. 分析调用接口调整：新版代码的`analyze_movie`函数直接接受电影`movie_id`作为参数，而不是完整的 URL，使用更加便捷。此外，新版还提供了输入电影 ID 的调用示例，方便使用者操作。
+
+<br>
+
+`window.py`
+
+1.输入内容的简化:beta版用户需要输入完整的豆瓣电影 URL，例如 https://movie.douban.com/subject/36296618/
+新版用户只需输入豆瓣电影的 电影 ID，例如 36296618。这种方式更加简洁、用户友好，避免了用户在输入时发生格式错误的可能。
+
+2.输入框的提示文本更新:beta版输入框的提示文本为 "请输入电影 URL"，输入框内需填写完整的 URL。新版输入框的提示文本更新为 "请输入电影 ID"，简化了提示信息，也直接提示了用户所需输入的内容格式。
+
+3.输入字符的长度限制:beta版最大输入字符长度为 40，适合 URL 的输入长度。新版最大输入字符长度减少至 10，更适合电影 ID 的长度，进一步优化了输入体验和数据验证。
+
+4.ID格式验证的优化:beta版通过检查输入内容中是否包含 https://movie.douban.com/subject/ 来判断 URL 的有效性。新版直接检查输入内容是否为数字（movie_id.isdigit()），如果是数字即认为有效。这种检查方法更为直接，避免了不必要的 URL 校验。
+
+5.`analyze_movie`函数调用参数的改变:beta版`analyze_movie` 接受的是完整的电影URL。新版`analyze_movie`接受的是电影 ID，使得后续的爬取和分析模块处理电影 ID 更加方便灵活。
