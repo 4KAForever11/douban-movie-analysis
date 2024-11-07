@@ -1,12 +1,11 @@
 import requests
-import time
-import random
-import re
 from bs4 import BeautifulSoup
 import paddle
 from paddlenlp.transformers import ErnieForSequenceClassification, ErnieTokenizer
 from paddlenlp.data import Pad, Tuple
 import emoji
+import random
+import time
 
 # 加载情感分析模型和分词器
 checkpoint_path = 'D:/douban-movie-analysis/aistudio/checkpoint'
@@ -14,53 +13,60 @@ model = ErnieForSequenceClassification.from_pretrained(checkpoint_path)
 tokenizer = ErnieTokenizer.from_pretrained(checkpoint_path)
 label_map = {0: 'negative', 1: 'positive'}
 
+USER_AGENTS = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0'
+]
+
+
 def contains_emoji(text):
     """判断评论中是否包含表情符号"""
     return any(emoji.is_emoji(char) for char in text)
 
-def fetch_page(url, headers):
-    """获取页面的函数，加入重试机制"""
-    for attempt in range(3):  # 尝试3次
-        try:
-            response = requests.get(url, headers=headers, timeout=5)
-            if response.status_code == 200:
-                return response
-            else:
-                print(f"请求失败，状态码: {response.status_code}")
-        except requests.RequestException as e:
-            print(f"请求出现异常: {e}")
-        time.sleep(random.uniform(3, 10))  # 每次失败后等待随机时间
-    return None  # 如果3次都失败，返回None
 
-def get_movie_comments(url):
-    """从豆瓣电影页面爬取前10页的评论并返回评论列表"""
+def fetch_comments_page(url):
+    """抓取页面的 HTML 内容"""
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36'
+        'User-Agent': random.choice(USER_AGENTS),
+        'Referer': 'https://movie.douban.com/'
     }
-    movie_id = re.search(r'\d+', url).group()
-    comment_url_template = f"https://movie.douban.com/subject/{movie_id}/comments?start={{}}&limit=20&status=P"
-    all_comments = []
-
-    for page in range(10):  # 前10页评论
-        start = page * 20
-        comment_url = comment_url_template.format(start)
-        response = fetch_page(comment_url, headers)
-
-        if response and response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            comment_elements = soup.find_all('span', class_='short')
-
-            for comment in comment_elements:
-                text = comment.get_text(strip=True)
-                if not contains_emoji(text):  # 过滤掉包含表情符号的评论
-                    all_comments.append(text)
-            print(f"第 {page + 1} 页爬取成功")
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return response.text
         else:
-            print(f"第 {page + 1} 页爬取失败")
+            print(f"请求失败，状态码: {response.status_code}")
+            return None
+    except requests.RequestException as e:
+        print(f"请求出现异常: {e}")
+        return None
 
-        time.sleep(random.uniform(1, 3))  # 增加随机延时
 
-    return all_comments
+def get_movie_comments(movie_id):
+    """爬取多页评论内容"""
+    comments = []
+    for page in range(10):  # 爬取前10页评论
+        start = page * 20
+        url = f"https://movie.douban.com/subject/{movie_id}/comments?start={start}&limit=20&status=P&sort=new_score"
+        print(f"正在爬取：{url}")
+
+        html = fetch_comments_page(url)
+        if not html:
+            print(f"第 {page + 1} 页加载失败")
+            continue
+
+        soup = BeautifulSoup(html, 'html.parser')
+        for comment_tag in soup.find_all('span', class_='short'):
+            text = comment_tag.get_text(strip=True)
+            if not contains_emoji(text):
+                comments.append(text)
+
+        print(f"第 {page + 1} 页爬取成功，共爬取 {len(comments)} 条评论")
+        time.sleep(random.uniform(5, 20))  # 随机延时，避免频繁请求
+
+    return comments
+
 
 def analyze_sentiment(comments):
     """对评论进行情感分析并返回情感标签列表"""
@@ -68,7 +74,8 @@ def analyze_sentiment(comments):
     examples = [
         (
             tokenizer(comment, max_length=128, padding='max_length', truncation=True, return_dict=False)["input_ids"],
-            tokenizer(comment, max_length=128, padding='max_length', truncation=True, return_dict=False)["token_type_ids"]
+            tokenizer(comment, max_length=128, padding='max_length', truncation=True, return_dict=False)[
+                "token_type_ids"]
         )
         for comment in comments
     ]
@@ -95,10 +102,11 @@ def analyze_sentiment(comments):
 
     return results
 
-def analyze_movie(url):
-    """爬取评论并进行情感分析"""
+
+def analyze_movie(movie_id):
+    """获取多页短评并进行情感分析"""
     print("分析按钮已点击，正在分析...")
-    comments = get_movie_comments(url)
+    comments = get_movie_comments(movie_id)
     if not comments:
         print("未能成功爬取任何评论")
         return 0, 0
@@ -107,3 +115,9 @@ def analyze_movie(url):
     positive_count = sentiments.count("positive")
     negative_count = sentiments.count("negative")
     return positive_count, negative_count
+
+
+# # 使用示例：输入电影ID
+# movie_id = input("请输入电影ID：")
+# positive_count, negative_count = analyze_movie(movie_id)
+# print(f"正面评论数：{positive_count}，负面评论数：{negative_count}")
