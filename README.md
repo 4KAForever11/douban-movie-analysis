@@ -14,15 +14,15 @@
 
 `spider.py`是原来用来测试的爬虫的代码
 
-因为没有弄好豆瓣的反爬，目前`analyze_comments.py`的爬虫是爬多爬少一旦爬到一点页数都会触发请求失败，状态码: 403，原来的`spider.py`似乎更好用一点，但豆瓣都是爬到一定页数和次数就会触发反爬
+目前大致修改好了爬虫，现在`analyze_comments.py`的爬虫爬到第6页评论时会触发请求失败，状态码: 403，后面再看下有没有解决办法
 
-反爬机制真的很难受😭
+目前爬虫的每页请求之间的延时范围设定为 5-20 秒，所以爬也得等一下
 
 <br>
 
 ### 注意事项
 
-1. **依赖库**: 确保安装了所有需要的库和anaconda，包括`paddle`, `paddlenlp`, `pygame`, `pyperclip`，`emoji` 和 `beautifulsoup4`。其他基本不需要安装,除非你用的不是conda环境
+1. **依赖库**: 确保安装了所有需要的库和anaconda，包括`paddle`, `paddlenlp`, `pygame`, `pyperclip`，`emoji` 和 `beautifulsoup4`。其他需要的库基本不需要安装,除非你用的不是conda环境
    
 2. **字体路径**: 检查字体路径是否正确。我用的msyh.ttc(微软雅黑)
    
@@ -58,19 +58,20 @@ pip install -r requirements.txt
 <br>
 4. 下载完成后，运行`window.py`
 
-![pygame](tu/pygame.png)
+![pygame](tu/v0.1-pygame.png)
 
-在输入框里面粘贴好豆瓣电影的某个电影的详细页url，比如：https://movie.douban.com/subject/1291544/
+在输入框里面粘贴好豆瓣电影的某个电影的ID，比如一个电影的详细页网址是：https://movie.douban.com/subject/36296618/
+那么`36296618`就是这个电影的ID
 
 最后点分析按钮运行程序，如果爬虫能正常爬取到数据，那么他就会继续运行，本地情感分析可能需要一点时间出结果，耐心等待下即可。
 
-下面就是运行出来分析网页https://movie.douban.com/subject/1291544/ 的电影哈利·波特与阿兹卡班的囚徒的分析结果,不过由于爬虫能力的限制只爬到了5页评论，所以也就只分析了5页的评论😀
+下面就是运行出来分析ID为`36296618`的电影`志愿军：存亡之战`的分析结果,不过由于爬虫能力的限制只爬到了6页评论，所以也就只分析了6页的评论😀
 
-![pygame-run](tu/pygame-run.png)
+![pygame-run](tu/v0.1-pygame-run.png)
 
 下面是python在运行的过程截图
 
-![code-run](tu/run.png)
+![code-run](tu/v0.1-run.png)
 
 ### 程序运行的流程
 
