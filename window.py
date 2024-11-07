@@ -28,11 +28,11 @@ button_box = pygame.Rect(150, 200, 100, 40)
 result_box = pygame.Rect(50, 280, 300, 150)
 
 # 输入和结果变量
-url_text = ''
+movie_id = ''
 result_text = "分析结果："
 input_active = False  # 输入框是否激活
-input_placeholder = "请输入电影 URL"  # 输入提示文字
-max_input_length = 40  # 限制输入框最大字符长度
+input_placeholder = "请输入电影 ID"  # 输入提示文字
+max_input_length = 10  # 限制输入框最大字符长度
 
 # 主循环
 running = True
@@ -43,14 +43,14 @@ while running:
     title_text = font.render("豆瓣电影评论分析", True, BLACK)
     screen.blit(title_text, (title_box.x + 40, title_box.y + 5))
 
-    # 绘制“需要分析的电影网址”提示
-    prompt_text = font.render("需要分析的电影网址", True, BLACK)
+    # 绘制“需要分析的电影 ID”提示
+    prompt_text = font.render("需要分析的电影 ID", True, BLACK)
     screen.blit(prompt_text, (input_prompt_box.x, input_prompt_box.y))
 
     # 绘制输入框
     pygame.draw.rect(screen, BLACK if input_active else GRAY, input_box, 2)  # 增加边框颜色
-    if url_text:
-        input_surface = font.render(url_text, True, BLACK)
+    if movie_id:
+        input_surface = font.render(movie_id, True, BLACK)
     else:
         input_surface = font.render(input_placeholder, True, GRAY)  # 显示提示文字
     screen.blit(input_surface, (input_box.x + 5, input_box.y + 5))
@@ -73,32 +73,32 @@ while running:
             # 检查鼠标点击是否在输入框上
             if input_box.collidepoint(event.pos):
                 input_active = True  # 激活输入框
-                if url_text == input_placeholder:
-                    url_text = ''  # 清空提示文字
+                if movie_id == input_placeholder:
+                    movie_id = ''  # 清空提示文字
             else:
                 input_active = False  # 未点击输入框则取消激活
             # 如果点击的是分析按钮
             if button_box.collidepoint(event.pos):
                 print("分析按钮已点击，正在分析...")  # 打印调试信息
-                print("输入的URL:", url_text)  # 确认URL内容
-                if url_text and "https://movie.douban.com/subject/" in url_text:
+                print("输入的电影 ID:", movie_id)  # 确认ID内容
+                if movie_id.isdigit():
                     # 调用分析模块进行情感分析
-                    positive_count, negative_count = analyze_movie(url_text)
+                    positive_count, negative_count = analyze_movie(movie_id)
                     result_text = f"正面评论: {positive_count} 负面评论: {negative_count}"
                 else:
-                    result_text = "请输入有效的豆瓣电影 URL！"  # 提示URL格式错误
+                    result_text = "请输入有效的电影 ID！"  # 提示格式错误
         elif event.type == pygame.KEYDOWN:
             if input_active:
                 # 支持粘贴功能（Ctrl + V）
                 if event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
-                    url_text = pyperclip.paste()[:max_input_length]  # 从剪贴板粘贴内容并限制长度
+                    movie_id = pyperclip.paste()[:max_input_length]  # 从剪贴板粘贴内容并限制长度
                 elif event.key == pygame.K_BACKSPACE:
                     if pygame.key.get_mods() & pygame.KMOD_CTRL:  # 按下 Ctrl + Backspace 快速清空输入框
-                        url_text = ''
+                        movie_id = ''
                     else:
-                        url_text = url_text[:-1]
-                elif event.unicode.isprintable() and len(url_text) < max_input_length:  # 检查是否为可打印字符并限制长度
-                    url_text += event.unicode
+                        movie_id = movie_id[:-1]
+                elif event.unicode.isprintable() and len(movie_id) < max_input_length:  # 检查是否为可打印字符并限制长度
+                    movie_id += event.unicode
 
     # 刷新屏幕
     pygame.display.flip()
