@@ -4,3 +4,4 @@ pygame
 pyperclip
 emoji
 beautifulsoup4
+fake_useragent
