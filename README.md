@@ -50,7 +50,7 @@ conda create -n douban-movie-analysis python=3.9
 conda activate douban-movie-analysis
 ```
 <br>
-3. 一键下载所需库,行以下命令下载所需的库：
+3. 运行以下命令下载所需的库：
 
 ```bash
 pip install -r requirements.txt
