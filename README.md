@@ -22,7 +22,7 @@
 
 ### 注意事项
 
-1. **依赖库**: 确保安装了所有需要的库和anaconda，包括`paddle`, `paddlenlp`, `pygame`, `pyperclip`，`emoji` 和 `beautifulsoup4`。其他需要的库基本不需要安装,除非你用的不是conda环境
+1. **依赖库**: 确保安装了所有需要的库和anaconda，包括`paddle`, `paddlenlp`, `pygame`, `pyperclip`，`emoji` ，`fake_useragent`和 `beautifulsoup4`。其他需要的库基本不需要安装,除非你用的不是conda环境
    
 2. **字体路径**: 检查字体路径是否正确。我用的msyh.ttc(微软雅黑)
    
